@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "swiss-yellow": "#FFCC00", /* Classic bold swiss yellow */
+                        "swiss-black": "#0F0F0F",
+                        "swiss-white": "#FAFAFA",
+                        "swiss-gray": "#EBEBEB",
+                        "swiss-darkgray": "#222222",
+                    },
+                    fontFamily: {
+                        "swiss": ['"Helvetica Neue"', 'Helvetica', 'Arial', 'sans-serif'],
+                    },
+                },
+            },
+        }
+    </script>
+    <title>Tensor1 | AI Engineering</title>
+    <style>
+        html {
+            scroll-behavior: smooth;
+            scroll-snap-type: y mandatory;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        }
+
+        ::-moz-selection {
+            background: #FFCC00;
+            color: #0F0F0F;
+        }
+
+        ::selection {
+            background: #FFCC00;
+            color: #0F0F0F;
+        }
+
+        /* Grid system styling for strict Swiss grid borders */
+        .border-grid {
+            border-color: #0F0F0F;
+        }
+
+        .dark .border-grid {
+            border-color: #333333;
+        }
+
+        .swiss-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+        }
+
+        /* Full-viewport sections: fill viewport, scroll snap to each section */
+        main section {
+            min-height: 100vh;
+            padding-top: 5rem; /* below sticky header (h-20) */
+            display: flex;
+            flex-direction: column;
+            scroll-snap-align: start;
+            scroll-snap-stop: always;
+            box-sizing: border-box;
+        }
+
+        /* First section: no extra top padding so hero aligns to header */
+        main section:first-of-type {
+            padding-top: 0;
+        }
+
+        /* Single grid child fills section */
+        main section > .swiss-grid {
+            flex: 1;
+            min-height: 0;
+        }
+
+        /* Company: header row stays auto, grid of cards fills rest */
+        main section > .swiss-grid:first-child:not(:only-child) {
+            flex: 0 0 auto;
+        }
+
+        /* Grid items stretch to fill row height */
+        main section .swiss-grid {
+            align-items: stretch;
+        }
+    </style>
+    <script>
+        function toggleTheme() {
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+                localStorage.theme = 'light';
+            } else {
+                document.documentElement.classList.add('dark');
+                localStorage.theme = 'dark';
+            }
+        }
+
+        // Apply theme immediately to prevent FOUC
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark')
+        } else {
+            document.documentElement.classList.remove('dark')
+        }
+    </script>
+</head>
+
+<body
+    class="bg-swiss-white dark:bg-swiss-black text-swiss-black dark:text-swiss-white transition-colors duration-200 antialiased overflow-x-hidden font-swiss border-x border-grid max-w-[1920px] mx-auto min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header
+        class="border-y border-grid sticky top-0 bg-swiss-white dark:bg-swiss-black z-50 transition-colors duration-200"
+        style="border-bottom-width: 2px; border-top-width: 0;">
+        <div class="swiss-grid items-stretch h-20">
+            <div class="col-span-6 md:col-span-3 lg:col-span-2 px-6 flex items-center gap-3 border-r border-grid">
+                <div
+                    class="w-8 h-8 bg-swiss-yellow flex items-center justify-center font-bold text-swiss-black text-sm">
+                    T1
+                </div>
+                <span class="text-xl font-black tracking-tighter">TENSOR1<span class="text-swiss-yellow">.</span></span>
+            </div>
+
+            <nav class="hidden select-none md:flex col-span-4 lg:col-span-8 border-r border-grid">
+                <a href="#"
+                    class="flex-1 flex items-center justify-center font-bold text-sm uppercase tracking-widest hover:bg-swiss-yellow hover:text-swiss-black transition-colors border-r border-grid last:border-r-0">Company</a>
+                <a href="#"
+                    class="flex-1 flex items-center justify-center font-bold text-sm uppercase tracking-widest hover:bg-swiss-yellow hover:text-swiss-black transition-colors border-r border-grid last:border-r-0">Services</a>
+                <a href="#"
+                    class="flex-1 flex items-center justify-center font-bold text-sm uppercase tracking-widest hover:bg-swiss-yellow hover:text-swiss-black transition-colors border-r border-grid last:border-r-0">Blogs</a>
+            </nav>
+
+            <div class="col-span-6 md:col-span-5 lg:col-span-2 flex items-stretch">
+                <button onclick="toggleTheme()"
+                    class="w-16 md:w-20 border-l border-grid md:border-l-0 border-r border-grid flex items-center justify-center hover:bg-swiss-yellow hover:text-swiss-black transition-colors outline-none">
+                    <span class="material-symbols-outlined dark:hidden">dark_mode</span>
+                    <span class="material-symbols-outlined hidden dark:block">light_mode</span>
+                </button>
+                <a href="#"
+                    class="flex-1 flex items-center justify-center bg-swiss-black dark:bg-swiss-white text-swiss-white dark:text-swiss-black font-bold uppercase tracking-widest text-xs lg:text-sm hover:bg-swiss-yellow hover:text-swiss-black dark:hover:bg-swiss-yellow dark:hover:text-swiss-black transition-colors">
+                    Start Project
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1">
+
+        <!-- Hero Section -->
+        <section class="border-b border-grid" style="border-bottom-width: 2px;">
+            <div class="swiss-grid">
+                <!-- Large Yellow Block -->
+                <div
+                    class="col-span-12 lg:col-span-8 p-8 md:p-16 lg:p-24 border-b lg:border-b-0 lg:border-r border-grid bg-swiss-yellow text-swiss-black flex flex-col justify-center">
+                    <p class="font-bold text-sm mb-8 uppercase tracking-widest border-l-4 border-swiss-black pl-4">AIML
+                        / SOFTWARE Solutions</p>
+                    <h1
+                        class="text-[5rem] md:text-[8rem] lg:text-[11rem] font-bold leading-[0.8] tracking-tighter uppercase break-words hyphens-auto mt-4 mb-12">
+                        TENSOR1<br>
+                        ENG.
+                    </h1>
+                </div>
+
+                <!-- Side Content -->
+                <div class="col-span-12 lg:col-span-4 flex flex-col">
+                    <div class="flex-1 p-8 md:p-12 border-b border-grid flex flex-col justify-center">
+                        <p class="text-2xl md:text-3xl font-medium leading-tight mb-8 max-w-lg">
+                            We design, build, and deploy AI-native software systems that scale.
+                        </p>
+                        <a href="#"
+                            class="inline-flex items-center self-start gap-2 font-bold uppercase tracking-widest text-sm hover:text-swiss-yellow transition-colors group">
+                            Services
+                            <span
+                                class="material-symbols-outlined transform group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                        </a>
+                    </div>
+                    <div id="capability-cycler"
+                        class="flex-1 p-8 md:p-12 bg-swiss-black text-swiss-white dark:bg-swiss-darkgray flex flex-col justify-center items-start relative transition-opacity duration-300">
+                        <div class="text-5xl lg:text-7xl font-black mb-6 text-swiss-yellow opacity-80" id="cyc-num">01</div>
+                        <h3 class="text-2xl lg:text-3xl font-bold uppercase tracking-tighter mb-4" id="cyc-title">Software<br>Engineering</h3>
+                        <p class="text-sm lg:text-base font-medium opacity-80 leading-relaxed max-w-sm" id="cyc-desc">High-performance distributed systems designed for heavy AI workloads and seamless integration.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Company (Grid style) -->
+        <section class="border-b border-grid">
+            <div class="swiss-grid border-b border-grid">
+                <div
+                    class="col-span-12 lg:col-span-3 p-8 border-b lg:border-b-0 lg:border-r border-grid text-xl font-bold uppercase tracking-widest flex items-center">
+                    01 / Company
+                </div>
+                <div class="col-span-12 lg:col-span-9 p-8 md:p-12 text-xl md:text-3xl font-medium leading-tight">
+                    Tensor1 is a technology studio focused on building intelligent software systems at the intersection of software engineering, artificial intelligence, and modern infrastructure. We help companies design, build, and deploy advanced AI-powered products that are reliable, scalable, and production-ready.
+
+Our team works across the full stack of modern AI development — from foundational software engineering to cutting-edge machine learning systems. Whether it's integrating AI into existing products or building entirely new intelligent platforms, we focus on practical solutions that deliver real-world impact.
+                </div>
+            </div>
+
+            <div class="swiss-grid">
+                <!-- Cap 1 -->
+                <div
+                    class="col-span-12 md:col-span-6 lg:col-span-3 border-b lg:border-b-0 border-r border-grid p-8 md:p-12 hover:bg-swiss-yellow hover:text-swiss-black transition-colors dark:hover:bg-swiss-yellow group flex flex-col">
+                    <div class="text-5xl font-black mb-16 opacity-20 group-hover:opacity-100 transition-opacity">01
+                    </div>
+                    <h3 class="text-3xl font-bold uppercase tracking-tighter mb-6 leading-none mt-auto">
+                        AI Platforms</h3>
+                    <p class="text-base opacity-80 leading-relaxed font-medium">End-to-end intelligent platforms built on modern
+                        machine learning infrastructure.</p>
+                </div>
+                <!-- Cap 2 -->
+                <div
+                    class="col-span-12 md:col-span-6 lg:col-span-3 border-b lg:border-b-0 border-r border-grid p-8 md:p-12 hover:bg-swiss-yellow hover:text-swiss-black transition-colors dark:hover:bg-swiss-yellow group flex flex-col">
+                    <div class="text-5xl font-black mb-16 opacity-20 group-hover:opacity-100 transition-opacity">02
+                    </div>
+                    <h3 class="text-3xl font-bold uppercase tracking-tighter mb-6 leading-none mt-auto">
+                        AI-Native Applications</h3>
+                    <p class="text-base opacity-80 leading-relaxed font-medium">Software designed from the ground up with
+                        AI capabilities at the core.</p>
+                </div>
+                <!-- Cap 3 -->
+                <div
+                    class="col-span-12 md:col-span-6 lg:col-span-3 border-b md:border-b-0 border-r border-grid p-8 md:p-12 hover:bg-swiss-yellow hover:text-swiss-black transition-colors dark:hover:bg-swiss-yellow group flex flex-col">
+                    <div class="text-5xl font-black mb-16 opacity-20 group-hover:opacity-100 transition-opacity">03
+                    </div>
+                    <h3 class="text-3xl font-bold uppercase tracking-tighter mb-6 leading-none mt-auto">Autonomous Systems</h3>
+                    <p class="text-base opacity-80 leading-relaxed font-medium">Agents and automation systems that interact
+                        with data, APIs, and complex workflows.</p>
+                </div>
+                <!-- Cap 4 -->
+                <div
+                    class="col-span-12 md:col-span-6 lg:col-span-3 p-8 md:p-12 hover:bg-swiss-yellow hover:text-swiss-black transition-colors dark:hover:bg-swiss-yellow group flex flex-col">
+                    <div class="text-5xl font-black mb-16 opacity-20 group-hover:opacity-100 transition-opacity">04
+                    </div>
+                    <h3 class="text-3xl font-bold uppercase tracking-tighter mb-6 leading-none mt-auto">Data Intelligence Systems</h3>
+                    <p class="text-base opacity-80 leading-relaxed font-medium">Platforms that transform raw data into
+                        actionable insight using modern ML pipelines.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dynamic List Section -->
+        <section class="border-b border-grid">
+            <div class="swiss-grid">
+                <div class="col-span-12 lg:col-span-4 p-8 md:p-16 border-b lg:border-b-0 lg:border-r border-grid">
+                    <h2 class="text-4xl font-black uppercase tracking-tighter mb-8">02 / Building</h2>
+                    <p class="uppercase tracking-widest text-sm font-bold opacity-60 leading-relaxed">
+                        Custom solutions tailored to enterprise specific needs and technical environments.
+                    </p>
+                </div>
+                <div class="col-span-12 lg:col-span-8">
+                    <ul class="flex flex-col">
+                        <li class="border-b border-grid last:border-b-0 group">
+                            <a href="#"
+                                class="block p-8 md:px-12 md:py-10 flex justify-between items-center group-hover:bg-swiss-yellow group-hover:text-swiss-black transition-colors dark:group-hover:bg-swiss-yellow dark:group-hover:text-swiss-black">
+                                <span
+                                    class="text-3xl md:text-5xl lg:text-6xl font-black tracking-tighter uppercase whitespace-nowrap overflow-hidden text-ellipsis mr-4">Software Engineering</span>
+                                <span
+                                    class="material-symbols-outlined text-4xl md:text-5xl transform group-hover:rotate-45 transition-transform">arrow_upward</span>
+                            </a>
+                        </li>
+                        <li class="border-b border-grid last:border-b-0 group">
+                            <a href="#"
+                                class="block p-8 md:px-12 md:py-10 flex justify-between items-center group-hover:bg-swiss-yellow group-hover:text-swiss-black transition-colors dark:group-hover:bg-swiss-yellow dark:group-hover:text-swiss-black">
+                                <span
+                                    class="text-3xl md:text-5xl lg:text-6xl font-black tracking-tighter uppercase whitespace-nowrap overflow-hidden text-ellipsis mr-4">AI Integrations</span>
+                                <span
+                                    class="material-symbols-outlined text-4xl md:text-5xl transform group-hover:rotate-45 transition-transform">arrow_upward</span>
+                            </a>
+                        </li>
+                        <li class="border-b border-grid last:border-b-0 group">
+                            <a href="#"
+                                class="block p-8 md:px-12 md:py-10 flex justify-between items-center group-hover:bg-swiss-yellow group-hover:text-swiss-black transition-colors dark:group-hover:bg-swiss-yellow dark:group-hover:text-swiss-black">
+                                <span
+                                    class="text-3xl md:text-5xl lg:text-6xl font-black tracking-tighter uppercase whitespace-nowrap overflow-hidden text-ellipsis mr-4">Machine Learning Models</span>
+                                <span
+                                    class="material-symbols-outlined text-4xl md:text-5xl transform group-hover:rotate-45 transition-transform">arrow_upward</span>
+                            </a>
+                        </li>
+                        <li class="border-b border-grid last:border-b-0 group">
+                            <a href="#"
+                                class="block p-8 md:px-12 md:py-10 flex justify-between items-center group-hover:bg-swiss-yellow group-hover:text-swiss-black transition-colors dark:group-hover:bg-swiss-yellow dark:group-hover:text-swiss-black">
+                                <span
+                                    class="text-3xl md:text-5xl lg:text-6xl font-black tracking-tighter uppercase whitespace-nowrap overflow-hidden text-ellipsis mr-4">Model Finetuning</span>
+                                <span
+                                    class="material-symbols-outlined text-4xl md:text-5xl transform group-hover:rotate-45 transition-transform">arrow_upward</span>
+                            </a>
+                        </li>
+                        <li class="border-b border-grid last:border-b-0 group">
+                            <a href="#"
+                                class="block p-8 md:px-12 md:py-10 flex justify-between items-center group-hover:bg-swiss-yellow group-hover:text-swiss-black transition-colors dark:group-hover:bg-swiss-yellow dark:group-hover:text-swiss-black">
+                                <span
+                                    class="text-3xl md:text-5xl lg:text-6xl font-black tracking-tighter uppercase whitespace-nowrap overflow-hidden text-ellipsis mr-4">RAG Systems</span>
+                                <span
+                                    class="material-symbols-outlined text-4xl md:text-5xl transform group-hover:rotate-45 transition-transform">arrow_upward</span>
+                            </a>
+                        </li>
+                        <li class="border-b border-grid last:border-b-0 group">
+                            <a href="#"
+                                class="block p-8 md:px-12 md:py-10 flex justify-between items-center group-hover:bg-swiss-yellow group-hover:text-swiss-black transition-colors dark:group-hover:bg-swiss-yellow dark:group-hover:text-swiss-black">
+                                <span
+                                    class="text-3xl md:text-5xl lg:text-6xl font-black tracking-tighter uppercase whitespace-nowrap overflow-hidden text-ellipsis mr-4">Model Deployment</span>
+                                <span
+                                    class="material-symbols-outlined text-4xl md:text-5xl transform group-hover:rotate-45 transition-transform">arrow_upward</span>
+                            </a>
+                        </li>
+                        <li class="border-b border-grid last:border-b-0 group">
+                            <a href="#"
+                                class="block p-8 md:px-12 md:py-10 flex justify-between items-center group-hover:bg-swiss-yellow group-hover:text-swiss-black transition-colors dark:group-hover:bg-swiss-yellow dark:group-hover:text-swiss-black">
+                                <span
+                                    class="text-3xl md:text-5xl lg:text-6xl font-black tracking-tighter uppercase whitespace-nowrap overflow-hidden text-ellipsis mr-4">DevOps Infrastructure</span>
+                                <span
+                                    class="material-symbols-outlined text-4xl md:text-5xl transform group-hover:rotate-45 transition-transform">arrow_upward</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- large typography callout -->
+        <section
+            class="border-b border-grid bg-swiss-black text-swiss-white dark:bg-swiss-white dark:text-swiss-black p-8 md:p-16 lg:p-32 text-center flex flex-col justify-center items-center">
+            <span
+                class="inline-block text-swiss-yellow dark:text-swiss-black border-2 border-swiss-yellow dark:border-swiss-black px-6 py-2 font-bold uppercase tracking-[0.2em] text-xs mb-16">Core
+                Philosophy</span>
+            <h2 class="text-5xl md:text-7xl lg:text-[7rem] font-black tracking-tighter uppercase leading-[0.85]">
+                AI should <br>
+                <span class="text-swiss-yellow dark:text-swiss-gray">augment</span> <br>
+                human capability. <br>
+                <span class="text-swiss-yellow dark:text-swiss-gray">Not replace it.</span>
+            </h2>
+        </section>
+
+        <!-- Blogs -->
+        <section class="border-b border-grid">
+            <div class="swiss-grid">
+                <div class="col-span-12 lg:col-span-3 p-8 md:p-12 border-b lg:border-b-0 lg:border-r border-grid">
+                    <h2 class="text-xl font-bold uppercase tracking-widest mb-4">Blogs</h2>
+                    <p class="opacity-60 font-medium">Insights on AI engineering, infrastructure, and building at scale.</p>
+                </div>
+                <div class="col-span-12 lg:col-span-9">
+                    <ul class="flex flex-col">
+                        <li class="border-b border-grid last:border-b-0 group">
+                            <a href="#"
+                                class="block p-8 md:px-12 md:py-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4 group-hover:bg-swiss-yellow group-hover:text-swiss-black transition-colors dark:group-hover:bg-swiss-yellow dark:group-hover:text-swiss-black">
+                                <div class="border-l-4 border-swiss-yellow pl-4">
+                                    <span class="text-xs font-bold uppercase tracking-widest opacity-60">Engineering</span>
+                                    <h3 class="text-2xl md:text-3xl font-black tracking-tighter uppercase mt-1">Building Reliable RAG Pipelines</h3>
+                                </div>
+                                <span class="material-symbols-outlined text-3xl md:text-4xl transform group-hover:rotate-45 transition-transform flex-shrink-0">arrow_upward</span>
+                            </a>
+                        </li>
+                        <li class="border-b border-grid last:border-b-0 group">
+                            <a href="#"
+                                class="block p-8 md:px-12 md:py-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4 group-hover:bg-swiss-yellow group-hover:text-swiss-black transition-colors dark:group-hover:bg-swiss-yellow dark:group-hover:text-swiss-black">
+                                <div class="border-l-4 border-swiss-yellow pl-4">
+                                    <span class="text-xs font-bold uppercase tracking-widest opacity-60">Infrastructure</span>
+                                    <h3 class="text-2xl md:text-3xl font-black tracking-tighter uppercase mt-1">MLOps in Production</h3>
+                                </div>
+                                <span class="material-symbols-outlined text-3xl md:text-4xl transform group-hover:rotate-45 transition-transform flex-shrink-0">arrow_upward</span>
+                            </a>
+                        </li>
+                        <li class="border-b border-grid last:border-b-0 group">
+                            <a href="#"
+                                class="block p-8 md:px-12 md:py-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4 group-hover:bg-swiss-yellow group-hover:text-swiss-black transition-colors dark:group-hover:bg-swiss-yellow dark:group-hover:text-swiss-black">
+                                <div class="border-l-4 border-swiss-yellow pl-4">
+                                    <span class="text-xs font-bold uppercase tracking-widest opacity-60">AI</span>
+                                    <h3 class="text-2xl md:text-3xl font-black tracking-tighter uppercase mt-1">From Prototype to Production</h3>
+                                </div>
+                                <span class="material-symbols-outlined text-3xl md:text-4xl transform group-hover:rotate-45 transition-transform flex-shrink-0">arrow_upward</span>
+                            </a>
+                        </li>
+                        <li class="border-b border-grid last:border-b-0 group">
+                            <a href="#"
+                                class="block p-8 md:px-12 md:py-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4 group-hover:bg-swiss-yellow group-hover:text-swiss-black transition-colors dark:group-hover:bg-swiss-yellow dark:group-hover:text-swiss-black">
+                                <div class="border-l-4 border-swiss-yellow pl-4">
+                                    <span class="text-xs font-bold uppercase tracking-widest opacity-60">Strategy</span>
+                                    <h3 class="text-2xl md:text-3xl font-black tracking-tighter uppercase mt-1">Data Stacks That Scale</h3>
+                                </div>
+                                <span class="material-symbols-outlined text-3xl md:text-4xl transform group-hover:rotate-45 transition-transform flex-shrink-0">arrow_upward</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact -->
+        <section id="contact" class="border-b border-grid bg-swiss-black text-swiss-white dark:bg-swiss-white dark:text-swiss-black">
+            <div class="swiss-grid flex flex-col justify-center">
+                <div class="col-span-12 lg:col-span-5 p-8 md:p-16 lg:p-24 border-b lg:border-b-0 lg:border-r border-grid flex flex-col justify-center">
+                    <span class="text-xs font-bold uppercase tracking-[0.2em] text-swiss-yellow dark:text-swiss-black mb-6">Get in touch</span>
+                    <h2 class="text-4xl md:text-6xl font-black uppercase tracking-tighter mb-6 leading-tight">Contact</h2>
+                    <p class="text-lg md:text-xl font-medium opacity-80 leading-relaxed max-w-md mb-12">
+                        Start a project, ask a question, or join the team. We reply within 24 hours.
+                    </p>
+                    <a href="mailto:hello@tensor1.xyz"
+                        class="inline-flex items-center justify-center gap-2 w-full md:w-auto bg-swiss-yellow text-swiss-black font-bold uppercase tracking-widest text-sm py-4 px-8 hover:opacity-90 transition-opacity">
+                        hello@tensor1.xyz
+                        <span class="material-symbols-outlined text-xl">mail</span>
+                    </a>
+                </div>
+                <div class="col-span-12 lg:col-span-7 p-8 md:p-16 lg:p-24 flex flex-col justify-center">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16">
+                        <div>
+                            <h3 class="text-xs font-bold uppercase tracking-widest opacity-60 mb-4">Email</h3>
+                            <a href="mailto:hello@tensor1.xyz" class="text-2xl md:text-3xl font-black tracking-tighter hover:text-swiss-yellow dark:hover:text-swiss-black transition-colors block">hello@tensor1.xyz</a>
+                        </div>
+                        <div>
+                            <h3 class="text-xs font-bold uppercase tracking-widest opacity-60 mb-4">Office</h3>
+                            <p class="text-xl md:text-2xl font-bold tracking-tighter">San Francisco, CA</p>
+                            <p class="text-lg font-medium opacity-80 mt-1">+1 (555) 000-0000</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-swiss-white dark:bg-swiss-black border-t border-grid">
+        <div class="swiss-grid items-center">
+            <div class="col-span-12 lg:col-span-3 flex items-center gap-3 py-6 px-6 border-b lg:border-b-0 lg:border-r border-grid">
+                <div class="w-8 h-8 bg-swiss-yellow flex items-center justify-center font-bold text-swiss-black text-sm">T1</div>
+                <span class="text-xl font-black tracking-tighter">TENSOR1<span class="text-swiss-yellow">.</span></span>
+            </div>
+            <nav class="col-span-12 lg:col-span-6 py-6 px-6 border-b lg:border-b-0 lg:border-r border-grid">
+                <div class="flex flex-wrap gap-x-8 gap-y-2 text-sm font-bold uppercase tracking-widest">
+                    <a href="#contact" class="hover:text-swiss-yellow transition-colors">Contact</a>
+                    <a href="mailto:hello@tensor1.xyz" class="hover:text-swiss-yellow transition-colors">Email</a>
+                </div>
+            </nav>
+            <div class="col-span-12 lg:col-span-3 py-6 px-6">
+                <p class="text-sm font-bold uppercase tracking-widest opacity-50">© 2026 Tensor1 Engineering</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const Company = [
+                {
+                    num: "01",
+                    title: "Software<br>Engineering",
+                    desc: "High-performance distributed systems designed for heavy AI workloads and seamless integration."
+                },
+                {
+                    num: "02",
+                    title: "AI<br>Integrations",
+                    desc: "Custom LLM orchestration, RAG pipelines, and agentic workflows embedded in your product."
+                },
+                {
+                    num: "03",
+                    title: "ML<br>Ops",
+                    desc: "Automated model deployment, monitoring, and evaluation frameworks for production AI."
+                },
+                {
+                    num: "04",
+                    title: "Data<br>Strategy",
+                    desc: "Architecting modern data stacks that fuel intelligence and maintain governance at scale."
+                }
+            ];
+
+            let cycIndex = 0;
+            const cycler = document.getElementById('capability-cycler');
+            const numEl = document.getElementById('cyc-num');
+            const titleEl = document.getElementById('cyc-title');
+            const descEl = document.getElementById('cyc-desc');
+
+            if(cycler && numEl && titleEl && descEl) {
+                setInterval(() => {
+                    cycler.style.opacity = 0;
+                    
+                    setTimeout(() => {
+                        cycIndex = (cycIndex + 1) % Company.length;
+                        numEl.innerHTML = Company[cycIndex].num;
+                        titleEl.innerHTML = Company[cycIndex].title;
+                        descEl.innerHTML = Company[cycIndex].desc;
+                        cycler.style.opacity = 1;
+                    }, 300);
+                }, 4000);
+            }
+        });
+    </script>
+</body>
+
+</html>

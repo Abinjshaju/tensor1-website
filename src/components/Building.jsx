@@ -1,34 +1,20 @@
 import { useRef, useState, useCallback, useEffect } from "react";
 import { useInView } from "../hooks/useInView";
-
-const ITEMS = [
-  "AI / ML",
-  "Software Development",
-  "Mobile App Development",
-  "Quality Assurance",
-  "Digital Transformation",
-  "Web App Development",
-  "Legacy System Modernization",
-  "Cloud & DevOps",
-  "Robotic Process Automation",
-  "IoT Solutions",
-  "Startup Consulting",
-  "Product Engineering",
-  "IT Infrastructure & Cybersecurity",
-  "Data Science & Analytics",
-  "Business Process Optimization",
-  "Emerging Technologies",
-];
+import { services } from "../data/services";
 
 function useDragScroll() {
   const scrollRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
   const startY = useRef(0);
   const startScrollTop = useRef(0);
+  const gestureStartY = useRef(0);
+  const significantDrag = useRef(false);
 
   const onMouseDown = useCallback((e) => {
     if (!scrollRef.current) return;
     setIsDragging(true);
+    significantDrag.current = false;
+    gestureStartY.current = e.clientY;
     startY.current = e.clientY;
     startScrollTop.current = scrollRef.current.scrollTop;
   }, []);
@@ -43,6 +29,9 @@ function useDragScroll() {
     if (!isDragging) return;
     const move = (e) => {
       if (!scrollRef.current) return;
+      if (Math.abs(e.clientY - gestureStartY.current) > 10) {
+        significantDrag.current = true;
+      }
       const dy = startY.current - e.clientY;
       scrollRef.current.scrollTop = startScrollTop.current + dy;
     };
@@ -55,14 +44,20 @@ function useDragScroll() {
     };
   }, [isDragging]);
 
+  const touchGestureStartY = useRef(0);
   const onTouchStart = useCallback((e) => {
     if (!scrollRef.current || e.touches.length !== 1) return;
+    significantDrag.current = false;
+    touchGestureStartY.current = e.touches[0].clientY;
     startY.current = e.touches[0].clientY;
     startScrollTop.current = scrollRef.current.scrollTop;
   }, []);
   const onTouchMove = useCallback((e) => {
     if (!scrollRef.current || e.touches.length !== 1) return;
     e.preventDefault();
+    if (Math.abs(e.touches[0].clientY - touchGestureStartY.current) > 10) {
+      significantDrag.current = true;
+    }
     const dy = startY.current - e.touches[0].clientY;
     scrollRef.current.scrollTop = startScrollTop.current + dy;
     startScrollTop.current = scrollRef.current.scrollTop;
@@ -72,6 +67,7 @@ function useDragScroll() {
   return {
     scrollRef,
     isDragging,
+    significantDrag,
     dragHandlers: {
       onMouseDown,
       onMouseLeave: onMouseUp,
@@ -83,9 +79,9 @@ function useDragScroll() {
 
 export default function Services() {
   const [listRef, listInView] = useInView({ threshold: 0.08, rootMargin: "0px 0px -80px 0px" });
-  const { scrollRef, isDragging, dragHandlers } = useDragScroll();
+  const { scrollRef, isDragging, significantDrag, dragHandlers } = useDragScroll();
+  const [expandedId, setExpandedId] = useState(null);
 
-  // Wheel scroll on carousel (passive: false so preventDefault works)
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
@@ -104,6 +100,11 @@ export default function Services() {
     el.addEventListener("wheel", onWheel, { passive: false });
     return () => el.removeEventListener("wheel", onWheel);
   }, [scrollRef]);
+
+  const toggleRow = (id) => {
+    if (significantDrag.current) return;
+    setExpandedId((prev) => (prev === id ? null : id));
+  };
 
   return (
     <section id="services" className="border-b border-grid">
@@ -127,28 +128,52 @@ export default function Services() {
             {...dragHandlers}
           >
             <ul className="flex flex-col min-h-min">
-              {ITEMS.map((label, index) => (
-                <li
-                  key={label}
-                  className={`border-b border-grid last:border-b-0 group list-item-enter flex-shrink-0 ${listInView ? "list-item-visible" : ""}`}
-                  style={{
-                    transitionDelay: listInView ? `${index * 0.1}s` : "0s",
-                  }}
-                >
-                  <a
-                    href="#"
-                    className="block p-8 md:px-12 md:py-10 flex justify-between items-center group-hover:bg-swiss-red group-hover:text-swiss-black transition-colors duration-200 dark:group-hover:bg-swiss-red dark:group-hover:text-swiss-black"
-                    onClick={(e) => isDragging && e.preventDefault()}
+              {services.map((item, index) => {
+                const expanded = expandedId === item.id;
+                return (
+                  <li
+                    key={item.id}
+                    className={`border-b border-grid last:border-b-0 group list-item-enter flex-shrink-0 ${listInView ? "list-item-visible" : ""}`}
+                    style={{
+                      transitionDelay: listInView ? `${index * 0.1}s` : "0s",
+                    }}
                   >
-                    <span className="text-3xl md:text-5xl lg:text-6xl font-black tracking-tighter uppercase whitespace-nowrap overflow-hidden text-ellipsis mr-4">
-                      {label}
-                    </span>
-                    <span className="material-symbols-outlined text-4xl md:text-5xl transform group-hover:rotate-45 transition-transform duration-200 flex-shrink-0">
-                      arrow_upward
-                    </span>
-                  </a>
-                </li>
-              ))}
+                    <div
+                      className={`transition-colors duration-200 ${
+                        expanded
+                          ? "bg-swiss-red text-swiss-black dark:bg-swiss-red dark:text-swiss-black"
+                          : "group-hover:bg-swiss-red group-hover:text-swiss-black dark:group-hover:bg-swiss-red dark:group-hover:text-swiss-black"
+                      }`}
+                    >
+                      <button
+                        type="button"
+                        aria-expanded={expanded}
+                        className="w-full text-left p-8 md:px-12 md:py-10 flex justify-between items-center gap-4 outline-none focus-visible:ring-2 focus-visible:ring-swiss-black focus-visible:ring-inset dark:focus-visible:ring-swiss-white"
+                        onClick={() => toggleRow(item.id)}
+                      >
+                        <span className="text-3xl md:text-5xl lg:text-6xl font-black tracking-tighter uppercase min-w-0 overflow-hidden text-ellipsis">
+                          {item.label}
+                        </span>
+                        <span
+                          className={`material-symbols-outlined text-4xl md:text-5xl flex-shrink-0 transition-transform duration-200 ${
+                            expanded ? "rotate-180" : "group-hover:rotate-45"
+                          }`}
+                          aria-hidden
+                        >
+                          expand_more
+                        </span>
+                      </button>
+                      {expanded && (
+                        <div className="px-8 md:px-12 pb-8 md:pb-10 pt-0 max-w-3xl">
+                          <p className="text-sm md:text-base font-medium leading-relaxed opacity-90 border-t border-swiss-black/20 dark:border-swiss-black/20 pt-6">
+                            {item.description}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </li>
+                );
+              })}
             </ul>
           </div>
         </div>

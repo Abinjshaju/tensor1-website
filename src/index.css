@@ -15,6 +15,11 @@ body {
   body {
     cursor: none;
   }
+
+  /* Setup admin uses the system cursor (CustomCursor is not mounted there). */
+  body.setup-route {
+    cursor: auto;
+  }
 }
 
 ::-moz-selection {

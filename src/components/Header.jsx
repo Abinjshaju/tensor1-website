@@ -1,16 +1,16 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
 
 const navItems = [
   { label: "Company", to: "/", hash: "company" },
-  { label: "Services", to: "/services" },
-  { label: "Blogs", to: "/", hash: "blogs" },
+  { label: "Services", to: "/", hash: "services" },
+  { label: "Blogs", to: "/blogs" },
+  { label: "Careers", to: "/careers" },
 ];
 
 export default function Header() {
   const { toggleTheme } = useTheme();
-  const { pathname } = useLocation();
-  const contactTo = pathname === "/services" ? "/services#contact" : "/#contact";
+  const contactTo = "/#contact";
 
   return (
     <header

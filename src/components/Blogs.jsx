@@ -1,14 +1,14 @@
+import { Link } from "react-router-dom";
 import { useInView } from "../hooks/useInView";
+import { useMergedBlogPosts } from "../hooks/useMergedBlogPosts";
+import BlogPostCard from "./BlogPostCard";
 
-const POSTS = [
-  { category: "Engineering", title: "Building Reliable RAG Pipelines" },
-  { category: "Infrastructure", title: "MLOps in Production" },
-  { category: "AI", title: "From Prototype to Production" },
-  { category: "Strategy", title: "Data Stacks That Scale" },
-];
+const RECENT_COUNT = 4;
 
 export default function Blogs() {
+  const { posts } = useMergedBlogPosts();
   const [listRef, listInView] = useInView({ threshold: 0.08, rootMargin: "0px 0px -80px 0px" });
+  const recent = posts.slice(0, RECENT_COUNT);
 
   return (
     <section id="blogs" className="border-b border-grid">
@@ -21,33 +21,29 @@ export default function Blogs() {
             Insights on AI engineering, infrastructure, and building at scale.
           </p>
         </div>
-        <div className="col-span-12 lg:col-span-9" ref={listRef}>
+        <div className="col-span-12 lg:col-span-9 flex flex-col min-h-0" ref={listRef}>
           <ul className="flex flex-col">
-            {POSTS.map((post, index) => (
+            {recent.map((post, index) => (
               <li
-                key={post.title}
-                className={`border-b border-grid last:border-b-0 group list-item-enter ${listInView ? "list-item-visible" : ""}`}
+                key={post.slug}
+                className={`list-item-enter ${listInView ? "list-item-visible" : ""}`}
                 style={{ transitionDelay: listInView ? `${index * 0.08}s` : "0s" }}
               >
-                <a
-                  href="#"
-                  className="block p-8 md:px-12 md:py-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4 group-hover:bg-swiss-red group-hover:text-swiss-black transition-colors dark:group-hover:bg-swiss-red dark:group-hover:text-swiss-black"
-                >
-                  <div className="border-l-4 border-swiss-red pl-4">
-                    <span className="text-xs font-bold uppercase tracking-widest opacity-60">
-                      {post.category}
-                    </span>
-                    <h3 className="text-2xl md:text-3xl font-black tracking-tighter uppercase mt-1">
-                      {post.title}
-                    </h3>
-                  </div>
-                  <span className="material-symbols-outlined text-3xl md:text-4xl transform group-hover:rotate-45 transition-transform flex-shrink-0">
-                    arrow_upward
-                  </span>
-                </a>
+                <BlogPostCard post={post} />
               </li>
             ))}
           </ul>
+          <div className="border-t border-grid">
+            <Link
+              to="/blogs"
+              className="flex items-center justify-center gap-2 w-full p-8 md:p-10 font-bold uppercase tracking-widest text-sm hover:bg-swiss-red hover:text-swiss-black dark:hover:bg-swiss-red dark:hover:text-swiss-black transition-colors duration-200 group"
+            >
+              Read more blogs
+              <span className="material-symbols-outlined text-lg transform group-hover:translate-x-1 transition-transform">
+                arrow_forward
+              </span>
+            </Link>
+          </div>
         </div>
       </div>
     </section>

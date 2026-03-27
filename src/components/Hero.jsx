@@ -1,30 +1,8 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { services } from "../data/services";
 
-const CAPABILITIES = [
-  {
-    num: "01",
-    title: "Software\nEngineering",
-    desc: "High-performance distributed systems designed for heavy AI workloads and seamless integration.",
-  },
-  {
-    num: "02",
-    title: "AI\nIntegrations",
-    desc: "Custom LLM orchestration, RAG pipelines, and agentic workflows embedded in your product.",
-  },
-  {
-    num: "03",
-    title: "ML\nOps",
-    desc: "Automated model deployment, monitoring, and evaluation frameworks for production AI.",
-  },
-  {
-    num: "04",
-    title: "Data\nStrategy",
-    desc: "Architecting modern data stacks that fuel intelligence and maintain governance at scale.",
-  },
-];
-
-function CapabilityCycler() {
+function ServiceCycler() {
   const [index, setIndex] = useState(0);
   const [opacity, setOpacity] = useState(1);
 
@@ -32,27 +10,29 @@ function CapabilityCycler() {
     const interval = setInterval(() => {
       setOpacity(0);
       setTimeout(() => {
-        setIndex((i) => (i + 1) % CAPABILITIES.length);
+        setIndex((i) => (i + 1) % services.length);
         setOpacity(1);
       }, 300);
-    }, 4000);
+    }, 5500);
     return () => clearInterval(interval);
   }, []);
 
-  const cap = CAPABILITIES[index];
+  const svc = services[index];
+  const num = String(index + 1).padStart(2, "0");
+
   return (
     <div
-      className="flex-1 p-8 md:p-12 bg-swiss-black text-swiss-white dark:bg-swiss-darkgray flex flex-col justify-center items-start relative transition-opacity duration-300"
+      className="flex-1 p-8 md:p-12 bg-swiss-black text-swiss-white dark:bg-swiss-darkgray flex flex-col justify-center items-start relative transition-opacity duration-300 min-h-[280px] lg:min-h-[320px]"
       style={{ opacity }}
     >
       <div className="text-5xl lg:text-7xl font-black mb-6 text-swiss-red opacity-80">
-        {cap.num}
+        {num}
       </div>
-      <h3 className="text-2xl lg:text-3xl font-bold uppercase tracking-tighter mb-4 whitespace-pre-line">
-        {cap.title}
+      <h3 className="text-xl md:text-2xl lg:text-3xl font-bold uppercase tracking-tighter mb-4 leading-tight">
+        {svc.label}
       </h3>
-      <p className="text-sm lg:text-base font-medium opacity-80 leading-relaxed max-w-sm">
-        {cap.desc}
+      <p className="text-xs sm:text-sm lg:text-base font-medium opacity-80 leading-relaxed max-w-md">
+        {svc.description}
       </p>
     </div>
   );
@@ -79,7 +59,7 @@ export default function Hero() {
               We design, build, and deploy AI-native software systems that scale.
             </p>
             <Link
-              to="/services"
+              to="/#services"
               className="inline-flex items-center self-start gap-2 font-bold uppercase tracking-widest text-sm hover:text-swiss-red transition-colors group"
             >
               Services
@@ -88,7 +68,7 @@ export default function Hero() {
               </span>
             </Link>
           </div>
-          <CapabilityCycler />
+          <ServiceCycler />
         </div>
       </div>
     </section>

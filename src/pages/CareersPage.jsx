@@ -1,36 +1,14 @@
-import { useEffect, useState } from "react";
-import { supabase } from "../lib/supabaseClient";
+import { useEffect } from "react";
+import { JOBS } from "../data/jobs";
 
 export default function CareersPage() {
-  const [jobs, setJobs] = useState([]);
-  const [jobsLoaded, setJobsLoaded] = useState(!supabase);
+  const jobs = JOBS;
+  const jobsLoaded = true;
 
   useEffect(() => {
     document.title = "Careers | Tensor1";
     return () => {
       document.title = "Tensor1 | AI Engineering";
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!supabase) {
-      setJobsLoaded(true);
-      return;
-    }
-    let cancelled = false;
-    (async () => {
-      const { data, error } = await supabase
-        .from("job_postings")
-        .select("id, role_id, title, description, experience, created_at")
-        .is("archived_at", null)
-        .order("created_at", { ascending: false });
-      if (!cancelled) {
-        if (!error && data) setJobs(data);
-        setJobsLoaded(true);
-      }
-    })();
-    return () => {
-      cancelled = true;
     };
   }, []);
 

@@ -4,7 +4,6 @@ import { useTheme } from "../context/ThemeContext";
 const navItems = [
   { label: "Company", to: "/", hash: "company" },
   { label: "Services", to: "/", hash: "services" },
-  { label: "Blogs", to: "/blogs" },
   { label: "Careers", to: "/careers" },
 ];
 
